@@ -160,8 +160,30 @@ config PMW3610_AUTOMOUSE_TIMEOUT_MS
   default 400
 
 config PMW3610_ADJUSTABLE_MOUSESPEED
-  bool "Enable Adjustable mouse speed"
-  default n
+	bool "Adjust mouse speed based on movement"
+	depends on INPUT_ drivers_pmw3610
+	help
+	  If enabled, the mouse cursor speed will be adjusted based on the
+	  speed of the trackball movement.
+    default n
+
+if PMW3610_ADJUSTABLE_MOUSESPEED
+
+config PMW3610_ADJUSTABLE_CURSOR_SPEED
+    bool "Adjust mouse cursor speed"
+    help
+      If enabled, the mouse cursor speed will be adjusted based on the
+      speed of the trackball movement.
+    default y
+
+config PMW3610_ADJUSTABLE_SCROLL_SPEED
+    bool "Adjust mouse scroll speed"
+    help
+      If enabled, the mouse scroll speed will be adjusted based on the
+      speed of the trackball movement.
+    default y
+
+endif
 
 module = PMW3610
 module-str = PMW3610
