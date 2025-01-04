@@ -632,7 +632,7 @@ static int pmw3610_report_data(const struct device *dev) {
 
 #ifdef CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
     int16_t movement_size = abs(raw_x) + abs(raw_y);
-    
+
     float speed_multiplier = 1.0; //速度の倍率
     if (movement_size > 60) {
         speed_multiplier = 3.0;
@@ -649,13 +649,24 @@ static int pmw3610_report_data(const struct device *dev) {
     }else if (movement_size > 1) {
         speed_multiplier = 0.1;
     }
-    
+
     raw_x = raw_x * speed_multiplier;
     raw_y = raw_y * speed_multiplier;
-    
+
+    // 移動量が閾値を超えた場合にマウスレイヤーに自動遷移
+    if (movement_size > CONFIG_PMW3610_AUTOMOUSE_THRESHOLD) {
+        if (!automouse_triggered) {
+            automouse_triggered = true;
+            zmk_keymap_layer_activate(AUTOMOUSE_LAYER);
+            k_timer_start(&automouse_layer_timer,
+                         K_MSEC(CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS),
+                         K_NO_WAIT);
+        }
+    }
+#endif
+
     int16_t x;
     int16_t y;
-#endif
 
     if (IS_ENABLED(CONFIG_PMW3610_ORIENTATION_0)) {
         x = -raw_x;
@@ -678,7 +689,7 @@ static int pmw3610_report_data(const struct device *dev) {
     if (IS_ENABLED(CONFIG_PMW3610_INVERT_Y)) {
         y = -y;
     }
-   
+
 #ifdef CONFIG_PMW3610_SMART_ALGORITHM
     int16_t shutter =
         ((int16_t)(buf[PMW3610_SHUTTER_H_POS] & 0x01) << 8) + buf[PMW3610_SHUTTER_L_POS];
