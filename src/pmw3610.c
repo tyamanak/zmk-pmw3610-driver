@@ -19,6 +19,16 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(pmw3610, CONFIG_INPUT_LOG_LEVEL);
 
+// ここに追加
+static bool automouse_triggered = false;
+static struct k_timer automouse_layer_timer;
+
+static void automouse_layer_timeout(struct k_timer *timer)
+{
+    automouse_triggered = false;
+    zmk_keymap_layer_deactivate(AUTOMOUSE_LAYER);
+}
+
 //////// Sensor initialization steps definition //////////
 // init is done in non-blocking manner (i.e., async), a //
 // delayable work is defined for this purpose           //
@@ -807,6 +817,9 @@ static int pmw3610_init(const struct device *dev) {
     struct pixart_data *data = dev->data;
     const struct pixart_config *config = dev->config;
     int err;
+
+    // タイマー初期化を追加
+    k_timer_init(&automouse_layer_timer, automouse_layer_timeout, NULL);
 
     // init device pointer
     data->dev = dev;
