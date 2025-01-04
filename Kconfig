@@ -167,4 +167,10 @@ module = PMW3610
 module-str = PMW3610
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"
 
+config PMW3610_AUTOMOUSE_THRESHOLD
+    int "Threshold for automatic mouse layer activation"
+    default 5
+    help
+      Movement threshold that triggers automatic mouse layer activation
+
 endif #PMW3610
