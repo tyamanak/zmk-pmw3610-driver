@@ -20,6 +20,8 @@
 LOG_MODULE_REGISTER(pmw3610, CONFIG_INPUT_LOG_LEVEL);
 
 // ここに追加
+#if CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS > 0
+#define AUTOMOUSE_LAYER 4  // レイヤー番号を直接指定
 static bool automouse_triggered = false;
 static struct k_timer automouse_layer_timer;
 
@@ -28,7 +30,7 @@ static void automouse_layer_timeout(struct k_timer *timer)
     automouse_triggered = false;
     zmk_keymap_layer_deactivate(AUTOMOUSE_LAYER);
 }
-
+#endif
 //////// Sensor initialization steps definition //////////
 // init is done in non-blocking manner (i.e., async), a //
 // delayable work is defined for this purpose           //
@@ -643,6 +645,7 @@ static int pmw3610_report_data(const struct device *dev) {
     int16_t movement_size = abs(raw_x) + abs(raw_y);
 
     // 移動量が閾値を超えた場合にマウスレイヤーに自動遷移
+    #if CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS > 0
     if (movement_size > CONFIG_PMW3610_AUTOMOUSE_THRESHOLD) {
         if (!automouse_triggered) {
             automouse_triggered = true;
@@ -652,6 +655,7 @@ static int pmw3610_report_data(const struct device *dev) {
                          K_NO_WAIT);
         }
     }
+    #endif
 #ifdef CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
 
     float speed_multiplier = 1.0; //速度の倍率
@@ -819,8 +823,9 @@ static int pmw3610_init(const struct device *dev) {
     int err;
 
     // タイマー初期化を追加
+    #if CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS > 0
     k_timer_init(&automouse_layer_timer, automouse_layer_timeout, NULL);
-
+    #endif
     // init device pointer
     data->dev = dev;
 
