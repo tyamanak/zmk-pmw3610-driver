@@ -630,8 +630,19 @@ static int pmw3610_report_data(const struct device *dev) {
     int16_t raw_y =
         TOINT16((buf[PMW3610_Y_L_POS] + ((buf[PMW3610_XY_H_POS] & 0x0F) << 8)), 12) / dividor;
 
-#ifdef CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
     int16_t movement_size = abs(raw_x) + abs(raw_y);
+
+    // 移動量が閾値を超えた場合にマウスレイヤーに自動遷移
+    if (movement_size > CONFIG_PMW3610_AUTOMOUSE_THRESHOLD) {
+        if (!automouse_triggered) {
+            automouse_triggered = true;
+            zmk_keymap_layer_activate(AUTOMOUSE_LAYER);
+            k_timer_start(&automouse_layer_timer,
+                         K_MSEC(CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS),
+                         K_NO_WAIT);
+        }
+    }
+#ifdef CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
 
     float speed_multiplier = 1.0; //速度の倍率
     if (movement_size > 60) {
@@ -653,16 +664,6 @@ static int pmw3610_report_data(const struct device *dev) {
     raw_x = raw_x * speed_multiplier;
     raw_y = raw_y * speed_multiplier;
 
-    // 移動量が閾値を超えた場合にマウスレイヤーに自動遷移
-    if (movement_size > CONFIG_PMW3610_AUTOMOUSE_THRESHOLD) {
-        if (!automouse_triggered) {
-            automouse_triggered = true;
-            zmk_keymap_layer_activate(AUTOMOUSE_LAYER);
-            k_timer_start(&automouse_layer_timer,
-                         K_MSEC(CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS),
-                         K_NO_WAIT);
-        }
-    }
 #endif
 
     int16_t x;
