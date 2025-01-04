@@ -19,18 +19,6 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(pmw3610, CONFIG_INPUT_LOG_LEVEL);
 
-// ここに追加
-#if CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS > 0
-#define AUTOMOUSE_LAYER 4  // レイヤー番号を直接指定
-static bool automouse_triggered = false;
-static struct k_timer automouse_layer_timer;
-
-static void automouse_layer_timeout(struct k_timer *timer)
-{
-    automouse_triggered = false;
-    zmk_keymap_layer_deactivate(AUTOMOUSE_LAYER);
-}
-#endif
 //////// Sensor initialization steps definition //////////
 // init is done in non-blocking manner (i.e., async), a //
 // delayable work is defined for this purpose           //
@@ -642,21 +630,8 @@ static int pmw3610_report_data(const struct device *dev) {
     int16_t raw_y =
         TOINT16((buf[PMW3610_Y_L_POS] + ((buf[PMW3610_XY_H_POS] & 0x0F) << 8)), 12) / dividor;
 
-    int16_t movement_size = abs(raw_x) + abs(raw_y);
-
-    // 移動量が閾値を超えた場合にマウスレイヤーに自動遷移
-    #if CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS > 0
-    if (movement_size > CONFIG_PMW3610_AUTOMOUSE_THRESHOLD) {
-        if (!automouse_triggered) {
-            automouse_triggered = true;
-            zmk_keymap_layer_activate(AUTOMOUSE_LAYER);
-            k_timer_start(&automouse_layer_timer,
-                         K_MSEC(CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS),
-                         K_NO_WAIT);
-        }
-    }
-    #endif
 #ifdef CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
+    int16_t movement_size = abs(raw_x) + abs(raw_y);
 
     float speed_multiplier = 1.0; //速度の倍率
     if (movement_size > 60) {
@@ -678,10 +653,9 @@ static int pmw3610_report_data(const struct device *dev) {
     raw_x = raw_x * speed_multiplier;
     raw_y = raw_y * speed_multiplier;
 
-#endif
-
     int16_t x;
     int16_t y;
+#endif
 
     if (IS_ENABLED(CONFIG_PMW3610_ORIENTATION_0)) {
         x = -raw_x;
@@ -822,10 +796,6 @@ static int pmw3610_init(const struct device *dev) {
     const struct pixart_config *config = dev->config;
     int err;
 
-    // タイマー初期化を追加
-    #if CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS > 0
-    k_timer_init(&automouse_layer_timer, automouse_layer_timeout, NULL);
-    #endif
     // init device pointer
     data->dev = dev;
 
