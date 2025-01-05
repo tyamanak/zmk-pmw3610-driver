@@ -159,6 +159,12 @@ config PMW3610_AUTOMOUSE_TIMEOUT_MS
   int "Amount of milliseconds the mouse layer will be active after using the trackball"
   default 400
 
+config PMW3610_AUTOMOUSE_THRESHOLD
+  int "Minimum movement size to activate the mouse layer"
+  default 5
+  help
+    Minimum movement size to activate the mouse layer.
+
 config PMW3610_ADJUSTABLE_MOUSESPEED
   bool "Enable Adjustable mouse speed"
   default n

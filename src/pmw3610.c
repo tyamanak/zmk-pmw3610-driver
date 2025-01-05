@@ -549,6 +549,7 @@ static bool automouse_triggered = false;
 
 static void activate_automouse_layer() {
     automouse_triggered = true;
+    LOG_DBG("Activate automouse layer");
     zmk_keymap_layer_activate(AUTOMOUSE_LAYER);
     k_timer_start(&automouse_layer_timer, K_MSEC(CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_MS), K_NO_WAIT);
 }
@@ -556,6 +557,7 @@ static void activate_automouse_layer() {
 static void deactivate_automouse_layer(struct k_timer *timer) {
     automouse_triggered = false;
     zmk_keymap_layer_deactivate(AUTOMOUSE_LAYER);
+    LOG_DBG("Deactivate automouse layer");
 }
 
 K_TIMER_DEFINE(automouse_layer_timer, deactivate_automouse_layer, NULL);
@@ -613,10 +615,15 @@ static int pmw3610_report_data(const struct device *dev) {
     data->curr_mode = input_mode;
 
 #if AUTOMOUSE_LAYER > 0
-    if (input_mode == MOVE &&
-            (automouse_triggered || zmk_keymap_highest_layer_active() != AUTOMOUSE_LAYER)
-    ) {
-        activate_automouse_layer();
+    if (input_mode == MOVE) {
+        int16_t movement_size = abs(raw_x) + abs(raw_y);
+        data->accumulated_movement += movement_size;
+        if (data->accumulated_movement > CONFIG_PMW3610_AUTOMOUSE_THRESHOLD &&
+            (automouse_triggered == false || zmk_keymap_highest_layer_active() != AUTOMOUSE_LAYER)
+        ) {
+            activate_automouse_layer();
+            data->accumulated_movement = 0;
+        }
     }
 #endif
 
@@ -630,7 +637,7 @@ static int pmw3610_report_data(const struct device *dev) {
     int16_t raw_y =
         TOINT16((buf[PMW3610_Y_L_POS] + ((buf[PMW3610_XY_H_POS] & 0x0F) << 8)), 12) / dividor;
 
-#ifdef CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
+#if CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
     int16_t movement_size = abs(raw_x) + abs(raw_y);
 
     float speed_multiplier = 1.0; //速度の倍率
@@ -652,6 +659,7 @@ static int pmw3610_report_data(const struct device *dev) {
 
     raw_x = raw_x * speed_multiplier;
     raw_y = raw_y * speed_multiplier;
+#endif
 
     int16_t x;
     int16_t y;
@@ -801,6 +809,7 @@ static int pmw3610_init(const struct device *dev) {
 
     // init smart algorithm flag;
     data->sw_smart_flag = false;
+    data->accumulated_movement = 0;
 
     // init trigger handler work
     k_work_init(&data->trigger_work, pmw3610_work_callback);
