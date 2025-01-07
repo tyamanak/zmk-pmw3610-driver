@@ -546,7 +546,6 @@ static void pmw3610_async_init(struct k_work *work) {
 #if AUTOMOUSE_LAYER > 0
 struct k_timer automouse_layer_timer;
 static bool automouse_triggered = false;
-#define AUTOMOUSE_MOVEMENT_THRESHOLD 5  // トラックボールの動きのしきい値
 
 static void activate_automouse_layer() {
     automouse_triggered = true;
