@@ -634,7 +634,9 @@ static int pmw3610_report_data(const struct device *dev) {
     int16_t movement_size = abs(raw_x) + abs(raw_y);
     float speed_multiplier = 1.0; //速度の倍率
     if (input_mode != SCROLL) {
-        if (movement_size > 60) {
+        if (movement_size > 120) {
+            speed_multiplier = 6.0;
+        }else if (movement_size > 60) {
             speed_multiplier = 3.0;
         }else if (movement_size > 30) {
             speed_multiplier = 1.5;
