@@ -546,6 +546,7 @@ static void pmw3610_async_init(struct k_work *work) {
 #if AUTOMOUSE_LAYER > 0
 struct k_timer automouse_layer_timer;
 static bool automouse_triggered = false;
+#define AUTOMOUSE_MOVEMENT_THRESHOLD 5  // トラックボールの動きのしきい値
 
 static void activate_automouse_layer() {
     automouse_triggered = true;
@@ -713,6 +714,15 @@ static int pmw3610_report_data(const struct device *dev) {
 
     if (x != 0 || y != 0) {
         if (input_mode != SCROLL) {
+#if AUTOMOUSE_LAYER > 0
+            // トラックボールの動きの大きさを計算
+            int16_t movement_size = abs(x) + abs(y);
+            if (input_mode == MOVE &&
+                (automouse_triggered || zmk_keymap_highest_layer_active() != AUTOMOUSE_LAYER) &&
+                movement_size > AUTOMOUSE_MOVEMENT_THRESHOLD) {
+                activate_automouse_layer();
+            }
+#endif
             input_report_rel(dev, INPUT_REL_X, x, false, K_FOREVER);
             input_report_rel(dev, INPUT_REL_Y, y, true, K_FOREVER);
         } else {
