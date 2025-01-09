@@ -59,6 +59,9 @@ static int (*const async_init_fn[ASYNC_INIT_STEP_COUNT])(const struct device *de
     [ASYNC_INIT_STEP_CONFIGURE] = pmw3610_async_init_configure,
 };
 
+int16_t x;
+int16_t y;
+
 //////// Function definitions //////////
 
 // checked and keep
@@ -657,8 +660,6 @@ if (input_mode == MOVE &&
         raw_y = raw_y * speed_multiplier;
     }
 
-    int16_t x;
-    int16_t y;
 #endif
 
     if (IS_ENABLED(CONFIG_PMW3610_ORIENTATION_0)) {
