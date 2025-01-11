@@ -172,11 +172,11 @@ config PMW3610_MOVEMENT_THRESHOLD
         This helps prevent accidental activation during typing.
 
 config PMW3610_MOUSE_SPEED_MIN
-    int "movement speed minimum for adjustable mouse speed"
+    string "movement speed minimum for adjustable mouse speed"
     default 0.5
 
 config PMW3610_MOUSE_SPEED_MAX
-    int "movement speed maximum for adjustable mouse speed"
+    string "movement speed maximum for adjustable mouse speed"
     default 3.0
 
 module = PMW3610
