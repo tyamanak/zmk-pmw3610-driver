@@ -185,7 +185,7 @@ config PMW3610_SCROLL_SPEED_MIN
 
 config PMW3610_SCROLL_SPEED_MAX
     string "movement speed maximum for adjustable scroll speed"
-    default ".0"
+    default "1.0"
 
 module = PMW3610
 module-str = PMW3610
