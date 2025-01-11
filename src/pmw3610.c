@@ -19,7 +19,7 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(pmw3610, CONFIG_INPUT_LOG_LEVEL);
 
-#include <stdlib.h> // k_strtod 用
+#include <math.h>
 
 //////// Sensor initialization steps definition //////////
 // init is done in non-blocking manner (i.e., async), a //
@@ -639,8 +639,8 @@ if (input_mode == MOVE &&
 #ifdef CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
     if (input_mode != SCROLL) {
         char *endptr_min, *endptr_max;
-        float mouse_speed_min = k_strtod(CONFIG_PMW3610_MOUSE_SPEED_MIN, &endptr_min);
-        float mouse_speed_max = k_strtod(CONFIG_PMW3610_MOUSE_SPEED_MAX, &endptr_max);
+        float mouse_speed_min = strtod(CONFIG_PMW3610_MOUSE_SPEED_MIN, &endptr_min);
+        float mouse_speed_max = strtod(CONFIG_PMW3610_MOUSE_SPEED_MAX, &endptr_max);
 
         float movement_magnitude = sqrt(raw_x * raw_x + raw_y * raw_y);
         float dynamic_multiplier = 1.0 + movement_magnitude / 10.0;
