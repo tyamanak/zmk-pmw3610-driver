@@ -637,18 +637,16 @@ if (input_mode == MOVE &&
         TOINT16((buf[PMW3610_Y_L_POS] + ((buf[PMW3610_XY_H_POS] & 0x0F) << 8)), 12) / dividor;
 
 #ifdef CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
-    if (input_mode != SCROLL) {
-        char *endptr_min, *endptr_max;
-        float mouse_speed_min = strtod(CONFIG_PMW3610_MOUSE_SPEED_MIN, &endptr_min);
-        float mouse_speed_max = strtod(CONFIG_PMW3610_MOUSE_SPEED_MAX, &endptr_max);
+    char *endptr_min, *endptr_max;
+    float mouse_speed_min = strtod(CONFIG_PMW3610_MOUSE_SPEED_MIN, &endptr_min);
+    float mouse_speed_max = strtod(CONFIG_PMW3610_MOUSE_SPEED_MAX, &endptr_max);
 
-        float movement_magnitude = sqrt(raw_x * raw_x + raw_y * raw_y);
-        float dynamic_multiplier = 1.0 + movement_magnitude / 10.0;
-        dynamic_multiplier = fmin(fmax(dynamic_multiplier, mouse_speed_min), mouse_speed_max);
+    float movement_magnitude = sqrt(raw_x * raw_x + raw_y * raw_y);
+    float dynamic_multiplier = 1.0 + movement_magnitude / 10.0;
+    dynamic_multiplier = fmin(fmax(dynamic_multiplier, mouse_speed_min), mouse_speed_max);
 
-        raw_x = raw_x * dynamic_multiplier;
-        raw_y = raw_y * dynamic_multiplier;
-    }
+    raw_x = raw_x * dynamic_multiplier;
+    raw_y = raw_y * dynamic_multiplier;
 #endif
 
     if (IS_ENABLED(CONFIG_PMW3610_ORIENTATION_0)) {
