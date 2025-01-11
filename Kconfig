@@ -151,7 +151,6 @@ config PMW3610_INVERT_SCROLL_X
   bool "Invert the X axis of the scroll"
   default PMW3610_INVERT_X
 
-ｊ
   bool "Invert the Y axis of the scroll"
   default PMW3610_INVERT_Y
 
