@@ -638,8 +638,14 @@ if (input_mode == MOVE &&
 
 #ifdef CONFIG_PMW3610_ADJUSTABLE_MOUSESPEED
     char *endptr_min, *endptr_max;
-    float mouse_speed_min = strtod(CONFIG_PMW3610_MOUSE_SPEED_MIN, &endptr_min);
-    float mouse_speed_max = strtod(CONFIG_PMW3610_MOUSE_SPEED_MAX, &endptr_max);
+    float mouse_speed_min, mouse_speed_max;
+    if (input_mode == SCROLL) {
+        mouse_speed_min = strtod(CONFIG_PMW3610_SCROLL_SPEED_MIN, &endptr_min);
+        mouse_speed_max = strtod(CONFIG_PMW3610_SCROLL_SPEED_MAX, &endptr_max);
+    } else {
+        mouse_speed_min = strtod(CONFIG_PMW3610_MOUSE_SPEED_MIN, &endptr_min);
+        mouse_speed_max = strtod(CONFIG_PMW3610_MOUSE_SPEED_MAX, &endptr_max);
+    }
 
     float movement_magnitude = sqrt(raw_x * raw_x + raw_y * raw_y);
     float dynamic_multiplier = 1.0 + movement_magnitude / 10.0;
