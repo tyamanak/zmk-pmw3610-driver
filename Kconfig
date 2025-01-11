@@ -171,6 +171,14 @@ config PMW3610_MOVEMENT_THRESHOLD
         A higher value means more movement is required to activate the mouse layer.
         This helps prevent accidental activation during typing.
 
+config PMW3610_MOUSE_SPEED_MIN
+    int "movement speed minimum for adjustable mouse speed"
+    default 0.5
+
+config PMW3610_MOUSE_SPEED_MAX
+    int "movement speed maximum for adjustable mouse speed"
+    default 3.0
+
 module = PMW3610
 module-str = PMW3610
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"

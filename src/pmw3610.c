@@ -639,7 +639,7 @@ if (input_mode == MOVE &&
 
         float movement_magnitude = sqrt(raw_x * raw_x + raw_y * raw_y);
         float dynamic_multiplier = 1.0 + movement_magnitude / 10.0;
-        dynamic_multiplier = fmin(fmax(dynamic_multiplier, 0.5), 3.0);
+        dynamic_multiplier = fmin(fmax(dynamic_multiplier, CONFIG_PMW3610_MOUSE_SPEED_MIN), CONFIG_PMW3610_MOUSE_SPEED_MAX);
 
         raw_x = raw_x * dynamic_multiplier;
         raw_y = raw_y * dynamic_multiplier;
