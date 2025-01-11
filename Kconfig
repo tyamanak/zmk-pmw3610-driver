@@ -173,11 +173,11 @@ config PMW3610_MOVEMENT_THRESHOLD
 
 config PMW3610_MOUSE_SPEED_MIN
     string "movement speed minimum for adjustable mouse speed"
-    default 0.5
+    default "0.5"
 
 config PMW3610_MOUSE_SPEED_MAX
     string "movement speed maximum for adjustable mouse speed"
-    default 3.0
+    default "3.0"
 
 module = PMW3610
 module-str = PMW3610
