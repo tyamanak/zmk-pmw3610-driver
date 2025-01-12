@@ -587,8 +587,8 @@ static void pmw3610_reset_automouse_timer(uint32_t new_timeout_ms) {
 
 // "MB1" が押下されたら、タイマーを B ms にリセットするリスナー
 static int automouse_click_listener(const zmk_event_t *eh) {
-    if (as_keycode_state_changed(eh)) {
-        struct keycode_state_changed *kc_ev = as_keycode_state_changed(eh);
+    if (as_zmk_keycode_state_changed(eh)) {
+        struct zmk_keycode_state_changed *kc_ev = as_zmk_keycode_state_changed(eh);
         // state == true (押下時) かつ、keycode が MB1 (マウス左クリック) の場合のみ
         if (kc_ev->state && kc_ev->keycode == ZMK_MOUSE_BUTTON_1) {
             // クリック後は CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_AFTER_CLICK_MS でレイヤーを抜ける設定
