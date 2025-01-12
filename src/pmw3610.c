@@ -601,7 +601,7 @@ static int automouse_click_listener(const zmk_event_t *eh) {
 }
 
 ZMK_LISTENER(automouse_click, automouse_click_listener);
-ZMK_SUBSCRIPTION(automouse_click, keycode_state_changed);
+ZMK_SUBSCRIPTION(automouse_click, zmk_keycode_state_changed);
 
 static enum pixart_input_mode get_input_mode_for_current_layer(const struct device *dev) {
     const struct pixart_config *config = dev->config;
