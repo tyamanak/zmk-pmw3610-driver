@@ -25,6 +25,8 @@ LOG_MODULE_REGISTER(pmw3610, CONFIG_INPUT_LOG_LEVEL);
 #include <zmk/event_manager.h>
 #include <zmk/events/keycode_state_changed.h>
 
+#include <dt-bindings/zmk/pointing.h>
+
 //////// Sensor initialization steps definition //////////
 // init is done in non-blocking manner (i.e., async), a //
 // delayable work is defined for this purpose           //
