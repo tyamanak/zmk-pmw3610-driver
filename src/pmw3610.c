@@ -593,9 +593,9 @@ static int automouse_click_listener(const zmk_event_t *eh) {
         struct zmk_keycode_state_changed *kc_ev = as_zmk_keycode_state_changed(eh);
         // state == true (押下時) かつ、keycode が MB1 (マウス左クリック) の場合のみ¨
         if (kc_ev->state && kc_ev->keycode == MB1) {
-            automouse_triggered = true; // ★追加★ デバッグとして試しに
+            deactivate_automouse_layer(&automouse_layer_timer);
             // クリック後は CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_AFTER_CLICK_MS でレイヤーを抜ける設定
-            pmw3610_reset_automouse_timer(CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_AFTER_CLICK_MS);
+            // pmw3610_reset_automouse_timer(CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_AFTER_CLICK_MS); // コメントアウト
         }
     }
     return 0;
