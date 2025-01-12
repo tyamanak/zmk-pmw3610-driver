@@ -187,10 +187,6 @@ config PMW3610_SCROLL_SPEED_MAX
     string "movement speed maximum for adjustable scroll speed"
     default "1.0"
 
-config PMW3610_AUTOMOUSE_TIMEOUT_AFTER_CLICK_MS
-    int "Amount of milliseconds the mouse layer will be active after clicking the mouse button"
-    default 500
-
 module = PMW3610
 module-str = PMW3610
 source "${ZEPHYR_BASE}/subsys/logging/Kconfig.template.log_config"

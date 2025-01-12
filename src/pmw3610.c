@@ -21,12 +21,6 @@ LOG_MODULE_REGISTER(pmw3610, CONFIG_INPUT_LOG_LEVEL);
 
 #include <math.h>
 
-// リスナー、マウスクリックの押下フックのためのヘッダファイル
-#include <zmk/event_manager.h>
-#include <zmk/events/keycode_state_changed.h>
-
-#include <dt-bindings/zmk/pointing.h>
-
 //////// Sensor initialization steps definition //////////
 // init is done in non-blocking manner (i.e., async), a //
 // delayable work is defined for this purpose           //
@@ -570,39 +564,7 @@ static void deactivate_automouse_layer(struct k_timer *timer) {
 }
 
 K_TIMER_DEFINE(automouse_layer_timer, deactivate_automouse_layer, NULL);
-
-// ★追加ここから★
-static void pmw3610_reset_automouse_timer(uint32_t new_timeout_ms) {
-	// すでにマウスレイヤーがアクティブな時のみ延長
-	if (!automouse_triggered) {
-		return;
-	}
-	// 一旦止めてから、new_timeout_ms で再スタート
-	k_timer_stop(&automouse_layer_timer);
-	k_timer_start(&automouse_layer_timer,
-	K_MSEC(new_timeout_ms),
-	K_NO_WAIT);
-}
-// ★追加ここまで★
-
 #endif
-
-// "MB1" が押下されたら、タイマーを B ms にリセットするリスナー
-static int automouse_click_listener(const zmk_event_t *eh) {
-    if (as_zmk_keycode_state_changed(eh)) {
-        struct zmk_keycode_state_changed *kc_ev = as_zmk_keycode_state_changed(eh);
-        // state == true (押下時) かつ、keycode が MB1 (マウス左クリック) の場合のみ¨
-        if (kc_ev->state && kc_ev->keycode == MB1) {
-            deactivate_automouse_layer(&automouse_layer_timer);
-            // クリック後は CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_AFTER_CLICK_MS でレイヤーを抜ける設定
-            // pmw3610_reset_automouse_timer(CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_AFTER_CLICK_MS); // コメントアウト
-        }
-    }
-    return 0;
-}
-
-ZMK_LISTENER(automouse_click, automouse_click_listener);
-ZMK_SUBSCRIPTION(automouse_click, zmk_keycode_state_changed);
 
 static enum pixart_input_mode get_input_mode_for_current_layer(const struct device *dev) {
     const struct pixart_config *config = dev->config;
