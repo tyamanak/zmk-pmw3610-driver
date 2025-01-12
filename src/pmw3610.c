@@ -592,7 +592,7 @@ static int automouse_click_listener(const zmk_event_t *eh) {
     if (as_zmk_keycode_state_changed(eh)) {
         struct zmk_keycode_state_changed *kc_ev = as_zmk_keycode_state_changed(eh);
         // state == true (押下時) かつ、keycode が MB1 (マウス左クリック) の場合のみ
-        if (kc_ev->state && kc_ev->keycode == LCLK) {
+        if (kc_ev->state && kc_ev->keycode == MB_LEFT) {
             // クリック後は CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_AFTER_CLICK_MS でレイヤーを抜ける設定
             pmw3610_reset_automouse_timer(CONFIG_PMW3610_AUTOMOUSE_TIMEOUT_AFTER_CLICK_MS);
         }
